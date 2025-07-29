@@ -10,11 +10,11 @@ override_doctype_class = {
 	"Sales Invoice": "fbr_standard.document_controllers.sales_invoice.SalesInvoice"
 }
 
-# doc_events = {
-#     "Sales Invoice": {
-#         "on_update": "fbr_standard.api.sales_invoice.custom_on_update"
-#     }
-# }
+doc_events = {
+    "Sales Invoice": {
+        "on_update": "fbr_standard.api.sales_invoice.custom_on_update"
+    }
+}
 # Includes in <head>
 # ------------------
 
