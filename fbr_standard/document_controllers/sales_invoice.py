@@ -27,12 +27,12 @@ class SalesInvoice(SalesInvoiceController):
                 self.custom_qr_code = '/files/'+self.name+'_online_qrcode.svg'
                 api_log.response_data = frappe.as_json(response, indent=4)
                 api_log.save()
-                frappe.msgprint("Invoice successfully submitted to FBR Digital Invoicing.")
+                frappe.msgprint("Invoice successfully submitted to FBR Invoicing.")
             else:
                 api_log.response_data = frappe.as_json(response, indent=4)
                 api_log.save()
                 frappe.throw(
-                    "Error in FBR Digital Invoicing" 
+                    "Error in FBR Invoicing" 
                 )
                   
                 
@@ -41,7 +41,7 @@ class SalesInvoice(SalesInvoiceController):
             api_log.save()
                 
             frappe.log_error(
-                title="FBR Digital Invoicing API Error",
+                title="FBR Invoicing API Error",
                 message=frappe.get_traceback()
             )
             
@@ -76,12 +76,12 @@ class SalesInvoice(SalesInvoiceController):
         items = []
         for item in self.items:
             item_data = {
-                "hsCode": frappe.db.get_value("Item", item.item_code, "custom_hs_code") or "0101.2100",
-                "productDescription": item.description,
+                "hsCode": str(frappe.db.get_value("Item", item.item_code, "custom_hs_code")) or "0101.2100",
+                "productDescription": str(item.description),
                 "rate": f"{item.custom_tax_rate}%",
-                "uoM": item.uom,
-                "quantity": item.qty,
-                "totalValues": round(item.amount + item.custom_tax_amount, 2),
+                "uoM": str(item.uom),
+                "quantity": int(item.qty),
+                "totalValues": round((item.amount + item.custom_tax_amount), 2),
                 "valueSalesExcludingST": round(item.amount, 2),
                 "fixedNotifiedValueOrRetailPrice": 0,
                 "salesTaxApplicable": item.custom_tax_amount,
