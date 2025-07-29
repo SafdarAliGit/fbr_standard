@@ -175,7 +175,7 @@ class SalesInvoice(SalesInvoiceController):
             )
             frappe.msgprint("Invoice submitted to FBR but QR code generation failed", alert=True)
 
-    # def handle_error_response(self, response):
+    def handle_error_response(self, response):
         """Process API error response"""
         error_msg = response.get("validationResponse", {}).get("message", "Unknown error occurred")
         # api_log.response_data = frappe.as_json(response, indent=4)
