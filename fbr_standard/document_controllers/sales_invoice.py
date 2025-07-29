@@ -76,15 +76,15 @@ class SalesInvoice(SalesInvoiceController):
         items = []
         for item in self.items:
             item_data = {
-                "hsCode": str(frappe.db.get_value("Item", item.item_code, "custom_hs_code")) or "8517.1890",
-                "productDescription": item.description,
-                "rate": f"{item.custom_tax_rate}%",
+                "hsCode": str(hs_code),
+                "productDescription": item.description or item.item_name,
+                "rate": f"{flt(item.custom_tax_rate, 2)}%",
                 "uoM": item.uom,
-                "quantity": cint(item.qty),
-                "totalValues": item.amount + item.custom_tax_amount,
-                "valueSalesExcludingST": item.amount,
+                "quantity": item.qty,
+                "totalValues": flt(item.amount + item.custom_tax_amount, 2),
+                "valueSalesExcludingST": flt(item.amount, 2),
                 "fixedNotifiedValueOrRetailPrice": 0,
-                "salesTaxApplicable": round(item.custom_tax_amount, 2),
+                "salesTaxApplicable": flt(item.custom_tax_amount, 2),
                 "salesTaxWithheldAtSource": 0,
                 "extraTax": "",
                 "furtherTax": 0,
@@ -95,6 +95,7 @@ class SalesInvoice(SalesInvoiceController):
                 "sroItemSerialNo": ""
             }
             items.append(item_data)
+            
         return items
 
 
