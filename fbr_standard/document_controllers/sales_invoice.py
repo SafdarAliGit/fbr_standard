@@ -115,8 +115,8 @@ class SalesInvoice(SalesInvoiceController):
         # Validate required fields before proceeding
         self.validate_fdi_fields()
         
-        api_log = frappe.new_doc("FDI Request Log")
-        api_log.request_data = frappe.as_json(self.get_mapped_data(), indent=4)
+        # api_log = frappe.new_doc("FDI Request Log")
+        # api_log.request_data = frappe.as_json(self.get_mapped_data(), indent=4)
         
         try:
             api = FBRDigitalInvoicingAPI()
@@ -127,13 +127,13 @@ class SalesInvoice(SalesInvoiceController):
                 
             resdata = response.get("validationResponse", {})
             
-            if resdata.get("status") == "Valid":
-                self.handle_success_response(response, api_log)
-            else:
-                self.handle_error_response(response, api_log)
+            # if resdata.get("status") == "Valid":
+            #     self.handle_success_response(response, api_log)
+            # else:
+            #     self.handle_error_response(response, api_log)
                 
         except Exception as e:
-            self.handle_api_exception(e, api_log)
+            self.handle_api_exception(e)
             
     def validate_fdi_fields(self):
         """Validate required fields for FBR integration"""
@@ -150,7 +150,7 @@ class SalesInvoice(SalesInvoiceController):
             if not item.get("custom_tax_rate") or not item.get("custom_tax_amount"):
                 frappe.throw(f"Tax information missing for item {item.item_code}")
 
-    def handle_success_response(self, response, api_log):
+    def handle_success_response(self, response):
         """Process successful API response"""
         self.custom_fbr_invoice_no = response.get("invoiceNumber")
         
@@ -163,9 +163,9 @@ class SalesInvoice(SalesInvoiceController):
             self.custom_qr_code = qr_code_path
             self.save()
             
-            api_log.response_data = frappe.as_json(response, indent=4)
-            api_log.status = "Success"
-            api_log.insert()
+            # api_log.response_data = frappe.as_json(response, indent=4)
+            # api_log.status = "Success"
+            # api_log.insert()
             
             frappe.msgprint("Invoice successfully submitted to FBR Invoicing")
         except Exception as e:
@@ -175,25 +175,22 @@ class SalesInvoice(SalesInvoiceController):
             )
             frappe.msgprint("Invoice submitted to FBR but QR code generation failed", alert=True)
 
-    def handle_error_response(self, response, api_log):
+    # def handle_error_response(self, response):
         """Process API error response"""
         error_msg = response.get("validationResponse", {}).get("message", "Unknown error occurred")
-        api_log.response_data = frappe.as_json(response, indent=4)
-        api_log.status = "Failed"
-        api_log.error = error_msg
-        api_log.insert()
+        # api_log.response_data = frappe.as_json(response, indent=4)
+        # api_log.status = "Failed"
+        # api_log.error = error_msg
+        # api_log.insert()
         
         frappe.throw(
             f"FBR Validation Error: {error_msg}",
             title="FBR Submission Failed"
         )
 
-    def handle_api_exception(self, exception, api_log):
+    def handle_api_exception(self, exception):
         """Handle API exceptions"""
         error_msg = str(exception)
-        api_log.error = error_msg
-        api_log.status = "Failed"
-        api_log.insert()
         
         frappe.log_error(
             title="FBR Invoicing API Error",
