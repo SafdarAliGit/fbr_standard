@@ -79,7 +79,7 @@ class SalesInvoice(SalesInvoiceController):
                 "hsCode": str(frappe.db.get_value("Item", item.item_code, "custom_hs_code")) or "8517.1890",
                 "productDescription": str(item.description),
                 "rate": f"{item.custom_tax_rate}%",
-                "uoM": item.uom,
+                "uoM": "Numbers, pieces, units",
                 "quantity": int(item.qty),
                 "totalValues": item.amount + item.custom_tax_amount,
                 "valueSalesExcludingST": item.amount,
