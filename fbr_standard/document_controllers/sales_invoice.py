@@ -80,9 +80,9 @@ class SalesInvoice(SalesInvoiceController):
                 "productDescription": item.description,
                 "rate": f"{item.custom_tax_rate}%",
                 "uoM": item.uom,
-                "quantity": item.qty,
+                "quantity": cint(item.qty),
                 "totalValues": item.amount + item.custom_tax_amount,
-                "valueSalesExcludingST": item.rate,
+                "valueSalesExcludingST": item.amount,
                 "fixedNotifiedValueOrRetailPrice": 0,
                 "salesTaxApplicable": round(item.custom_tax_amount, 2),
                 "salesTaxWithheldAtSource": 0,
@@ -91,7 +91,7 @@ class SalesInvoice(SalesInvoiceController):
                 "sroScheduleNo": "",
                 "fedPayable": 0,
                 "discount": 0,
-                "saleType": "Goods at standard rate (default)",
+                "saleType": "Goods",
                 "sroItemSerialNo": ""
             }
             items.append(item_data)
