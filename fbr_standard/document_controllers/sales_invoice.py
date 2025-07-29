@@ -75,6 +75,7 @@ class SalesInvoice(SalesInvoiceController):
     def get_items(self):
         items = []
         for item in self.items:
+            hs_code = frappe.db.get_value("Item", item.item_code, "custom_hs_code") or "8517.1890"
             item_data = {
                 "hsCode": str(hs_code),
                 "productDescription": item.description or item.item_name,
