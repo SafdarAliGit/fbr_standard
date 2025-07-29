@@ -5,7 +5,7 @@ def custom_on_update(doc, method):
     rate = float(account.tax_rate) or frappe.throw("Tax rate undefined on GST - CTPL")
 
     for item in doc.items:
-        item.tax_rate = rate
-        item.tax_amount = round(item.amount * (rate / 100), 2)
+        item.custom_tax_rate = rate
+        item.custom_tax_amount = round(item.amount * (rate / 100), 2)
 
 
