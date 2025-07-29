@@ -81,7 +81,7 @@ class SalesInvoice(SalesInvoiceController):
                 "rate": f"{item.custom_tax_rate}%",
                 "uoM": item.uom,
                 "quantity": int(item.qty),
-                "totalValues": round((item.amount + item.custom_tax_amount), 2),
+                "totalValues": item.amount + item.custom_tax_amount,
                 "valueSalesExcludingST": item.amount,
                 "fixedNotifiedValueOrRetailPrice": 0,
                 "salesTaxApplicable": round(item.custom_tax_amount, 2),
