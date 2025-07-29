@@ -56,14 +56,14 @@ class SalesInvoice(SalesInvoiceController):
         
         data["sellerNTNCNIC"] = self.company_tax_id
         data["sellerBusinessName"] = self.company
-        data["sellerProvince"] = frappe.db.get_value("Company", self.company, "custom_province")  # Default to Sindh if not set
+        data["sellerProvince"] = frappe.db.get_value("Company", self.company, "custom_province") or "Sindh"  # Default to Sindh if not set
         # Uncomment the next line if you have a seller address field
         #data["sellerAddress"] = self.seller.get("address")
         
         
         data["buyerNTNCNIC"] = self.tax_id if self.tax_id else ""
         data["buyerBusinessName"] = self.customer_name
-        data["buyerProvince"] = self.territory
+        data["buyerProvince"] = self.territory or "Sindh"
         #data["buyerAddress"] = self.buyer.get("address")
         data["buyerRegistrationType"] = "Unregistered" if not self.tax_id else "Registered"
         data["scenarioId"] = "SN002" if not self.tax_id else "SN001"  # Adjust based on your logic
