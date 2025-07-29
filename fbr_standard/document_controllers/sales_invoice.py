@@ -12,8 +12,8 @@ class SalesInvoice(SalesInvoiceController):
         if not self.custom_post_to_fdi:
             return
         data = self.get_mapped_data()
-        # api_log = frappe.new_doc("FDI Request Log")
-        # api_log.request_data = frappe.as_json(data, indent=4)
+        api_log = frappe.new_doc("FDI Request Log")
+        api_log.request_data = frappe.as_json(data, indent=4)
         try:
 
             api = FBRDigitalInvoicingAPI()
@@ -25,20 +25,20 @@ class SalesInvoice(SalesInvoiceController):
                 url = pyqrcode.create(self.custom_fbr_invoice_no)
                 url.svg(frappe.get_site_path()+'/public/files/'+self.name+'_online_qrcode.svg', scale=8)
                 self.custom_qr_code = '/files/'+self.name+'_online_qrcode.svg'
-                # api_log.response_data = frappe.as_json(response, indent=4)
-                # api_log.save()
+                api_log.response_data = frappe.as_json(response, indent=4)
+                api_log.save()
                 frappe.msgprint("Invoice successfully submitted to FBR Invoicing.")
             else:
-                # api_log.response_data = frappe.as_json(response, indent=4)
-                # api_log.save()
+                api_log.response_data = frappe.as_json(response, indent=4)
+                api_log.save()
                 frappe.throw(
                     "Error in FBR Invoicing" 
                 )
                   
                 
         except Exception as e:
-            # api_log.error = frappe.as_json(e, indent=4)
-            # api_log.save()
+            api_log.error = frappe.as_json(e, indent=4)
+            api_log.save()
                 
             frappe.log_error(
                 title="FBR Invoicing API Error",
