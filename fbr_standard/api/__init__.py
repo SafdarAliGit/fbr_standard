@@ -5,7 +5,7 @@ import requests
 
 class FBRDigitalInvoicingAPI:
     def __init__(self):
-        settings = frappe.get_doc("FBR Digital Invoicing Settings")
+        settings = frappe.get_doc("Fbr Standard Settings")
         self.base_url = settings.get("url")
         self.token = settings.get_password("token")
 
@@ -24,10 +24,10 @@ class FBRDigitalInvoicingAPI:
         if request.status_code != 200:
             
             frappe.log_error(
-                title="FBR Digital Invoicing API Error",
-                message=f"Error in FBR Digital Invoicing API: {request.text}"
+                title="FBR Standard API Error",
+                message=f"Error in FBR Standard API: {request.text}"
             )
-            frappe.throw(f"Error in FBR Digital Invoicing API: {request.text}")
+            frappe.throw(f"Error in FBR Standard API: {request.text}")
         return request.json()
     
 
