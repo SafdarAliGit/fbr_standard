@@ -79,19 +79,20 @@ class SalesInvoice(SalesInvoiceController):
                 "hsCode": str(frappe.db.get_value("Item", item.item_code, "custom_hs_code")) or "8517.1890",
                 "productDescription": str(item.description),
                 "rate": f"{item.custom_tax_rate}%",
-                "uoM": str(item.uom),
+                "uoM": str(item.stock_uom),
                 "quantity": int(item.qty),
-                "totalValues": 0,
+                "totalValues": round((item.amount + item.custom_tax_amount), 2),
                 "valueSalesExcludingST": round(item.amount, 2),
                 "fixedNotifiedValueOrRetailPrice": 0,
                 "salesTaxApplicable": item.custom_tax_amount,
                 "salesTaxWithheldAtSource": 0,
                 "extraTax": "",
                 "furtherTax": 0,
+                "sroScheduleNo": "",
                 "fedPayable": 0,
                 "discount": 0,
-                "saleType": "Goods"
+                "saleType": "Goods at standard rate (default)",
+                "sroItemSerialNo": ""
             }
             items.append(item_data)
         return items
-# round((item.amount + item.custom_tax_amount), 2)
