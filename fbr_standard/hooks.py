@@ -5,6 +5,16 @@ app_description = "this is fbr"
 app_email = "safdar211@gmail.com"
 app_license = "mit"
 
+
+override_doctype_class = {
+	"Sales Invoice": "fbr_standard.document_controllers.sales_invoice.SalesInvoice"
+}
+
+doc_events = {
+    "Sales Invoice": {
+        "on_update": "fbr_standard.api.sales_invoice.custom_on_update"
+    }
+}
 # Includes in <head>
 # ------------------
 
