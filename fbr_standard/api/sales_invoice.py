@@ -1,8 +1,8 @@
 import frappe
 
 def custom_on_update(doc, method):
-    account = frappe.get_doc("Account", "GST - ZPL")
-    rate = float(account.tax_rate) or frappe.throw("Tax rate undefined on GST - ZPL")
+    account = frappe.get_doc("Account", "GST - CTPL")
+    rate = float(account.tax_rate) or frappe.throw("Tax rate undefined on GST - CTPL")
 
     for item in doc.items:
         item.tax_rate = rate
