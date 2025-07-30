@@ -1,0 +1,251 @@
+{% extends "templates/web.html" %}
+
+{% block title %}HS Code Lookup{% endblock %}
+
+{% block page_content %}
+<style>
+    :root {
+        --primary-color: #2e86de;
+        --secondary-color: #f8f9fa;
+        --text-color: #333;
+        --border-color: #ddd;
+        --hover-color: #f1f1f1;
+    }
+    
+    .hs-code-container {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        line-height: 1.6;
+        color: var(--text-color);
+        margin: 0;
+        padding: 20px;
+        background-color: #f5f7fa;
+    }
+    
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+    
+    h1 {
+        color: var(--primary-color);
+        text-align: center;
+        margin-bottom: 30px;
+        font-weight: 600;
+    }
+    
+    .search-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 15px;
+        margin-bottom: 30px;
+        justify-content: center;
+    }
+    
+    .search-box {
+        flex: 1;
+        min-width: 250px;
+        max-width: 400px;
+    }
+    
+    .search-box input {
+        width: 100%;
+        padding: 12px 20px;
+        border: 1px solid var(--border-color);
+        border-radius: 4px;
+        font-size: 16px;
+        transition: all 0.3s;
+    }
+    
+    .search-box input:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 2px rgba(46, 134, 222, 0.2);
+    }
+    
+    .search-box label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 500;
+        color: var(--primary-color);
+    }
+    
+    .table-container {
+        overflow-x: auto;
+    }
+    
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+    }
+    
+    th, td {
+        padding: 12px 15px;
+        text-align: left;
+        border-bottom: 1px solid var(--border-color);
+    }
+    
+    th {
+        background-color: var(--primary-color);
+        color: white;
+        font-weight: 500;
+        position: sticky;
+        top: 0;
+    }
+    
+    tr:hover {
+        background-color: var(--hover-color);
+    }
+    
+    .hs-code {
+        font-weight: 600;
+        color: var(--primary-color);
+    }
+    
+    .loading {
+        text-align: center;
+        padding: 20px;
+        font-style: italic;
+        color: #666;
+    }
+    
+    .error {
+        color: #e74c3c;
+        text-align: center;
+        padding: 20px;
+        font-weight: 500;
+    }
+    
+    @media (max-width: 768px) {
+        .search-box {
+            min-width: 100%;
+        }
+        
+        th, td {
+            padding: 8px 10px;
+        }
+    }
+</style>
+
+<div class="hs-code-container">
+    <div class="container">
+        <h1>HS Code Lookup</h1>
+        
+        <div class="search-container">
+            <div class="search-box">
+                <label for="searchHsCode">Search by HS Code</label>
+                <input type="text" id="searchHsCode" placeholder="e.g. 8432.1010" autocomplete="off">
+            </div>
+            <div class="search-box">
+                <label for="searchDescription">Search by Description</label>
+                <input type="text" id="searchDescription" placeholder="e.g. agricultural machinery" autocomplete="off">
+            </div>
+        </div>
+        
+        <div class="table-container">
+            <table id="hsCodeTable">
+                <thead>
+                    <tr>
+                        <th>HS Code</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody id="hsCodeTableBody">
+                    <tr>
+                        <td colspan="2" class="loading">Loading HS Codes...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+frappe.ready(function() {
+    const searchHsCode = document.getElementById('searchHsCode');
+    const searchDescription = document.getElementById('searchDescription');
+    const tableBody = document.getElementById('hsCodeTableBody');
+    let allData = []; // Store all data for client-side filtering
+    
+    // Load data when page loads
+    loadHSCodes();
+    
+    // Setup search functionality for both fields
+    searchHsCode.addEventListener('input', filterResults);
+    searchDescription.addEventListener('input', filterResults);
+    
+    // Combined filter function
+    function filterResults() {
+        const hsCodeTerm = searchHsCode.value.toLowerCase();
+        const descTerm = searchDescription.value.toLowerCase();
+        
+        const rows = tableBody.getElementsByTagName('tr');
+        
+        for (let row of rows) {
+            const hsCode = row.cells[0].textContent.toLowerCase();
+            const description = row.cells[1].textContent.toLowerCase();
+            
+            const hsCodeMatch = hsCode.includes(hsCodeTerm);
+            const descMatch = description.includes(descTerm);
+            
+            row.style.display = (hsCodeMatch && descMatch) ? '' : 'none';
+        }
+    }
+    
+    // Function to load HS Codes from API
+    function loadHSCodes() {
+        frappe.call({
+            method: 'fbr_standard.api.hs_code.get_hs_codes',
+            callback: function(response) {
+                if (response.message.status === 'success') {
+                    allData = response.message.data;
+                    renderHSCodes(allData);
+                } else {
+                    showError(response.message.message || 'Error loading HS Codes');
+                }
+            },
+            error: function(err) {
+                showError('Failed to connect to server. Please try again later.');
+            }
+        });
+    }
+    
+    // Function to render HS Codes in the table
+    function renderHSCodes(data) {
+        if (data.length === 0) {
+            tableBody.innerHTML = `
+                <tr>
+                    <td colspan="2" class="loading">No HS Codes found</td>
+                </tr>
+            `;
+            return;
+        }
+
+        let html = '';
+        data.forEach(item => {
+            html += `
+                <tr>
+                    <td class="hs-code">${item.hS_CODE || 'N/A'}</td>
+                    <td>${item.description || 'No description available'}</td>
+                </tr>
+            `;
+        });
+        
+        tableBody.innerHTML = html;
+    }
+    
+    // Function to show error messages
+    function showError(message) {
+        tableBody.innerHTML = `
+            <tr>
+                <td colspan="2" class="error">${message}</td>
+            </tr>
+        `;
+    }
+});
+</script>
+{% endblock %}
