@@ -95,7 +95,7 @@ class SalesInvoice(SalesInvoiceController):
                 "sroScheduleNo": "",
                 "fedPayable": 0,
                 "discount": 0,
-                "saleType": "Goods",
+                "saleType": "Goods at standard rate (default)",
                 "sroItemSerialNo": ""
             }
             items.append(item_data)
