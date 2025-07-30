@@ -82,7 +82,7 @@ class SalesInvoice(SalesInvoiceController):
             item_data = {
                 "hsCode": "0101.2100",
                 "productDescription": item.description,
-                "rate": f"{item.custom_tax_rate}%",
+                "rate": f"{round(item.custom_tax_rate, 2)}%",
                 "uoM":"Numbers, pieces, units",
                 "quantity": cint(item.qty),
                 "totalValues": round(flt(item.amount + item.custom_tax_amount), 2),
