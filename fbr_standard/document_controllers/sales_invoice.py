@@ -86,7 +86,7 @@ class SalesInvoice(SalesInvoiceController):
                 "uoM": item.uom,
                 "quantity": cint(item.qty),
                 "totalValues": item.amount + item.custom_tax_amount,
-                "valueSalesExcludingST": item.amount,
+                "valueSalesExcludingST": round(item.amount, 2),
                 "fixedNotifiedValueOrRetailPrice": 0,
                 "salesTaxApplicable": round(item.custom_tax_amount, 2),
                 "salesTaxWithheldAtSource": 0,
