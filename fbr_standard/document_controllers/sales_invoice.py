@@ -20,34 +20,34 @@ class SalesInvoice(SalesInvoiceController):
             response = api.make_request("di_data/v1/di/postinvoicedata_sb", self.get_mapped_data())
             resdata = response.get("validationResponse")
             
-            if resdata.get("status") == "Valid":
-                self.custom_fbr_invoice_no = response.get("invoiceNumber")
-                url = pyqrcode.create(self.custom_fbr_invoice_no)
-                url.svg(frappe.get_site_path()+'/public/files/'+self.name+'_online_qrcode.svg', scale=8)
-                self.custom_qr_code = '/files/'+self.name+'_online_qrcode.svg'
-                api_log.response_data = frappe.as_json(response, indent=4)
-                api_log.save()
-                frappe.msgprint("Invoice successfully submitted to FBR Invoicing.")
-            else:
-                api_log.response_data = frappe.as_json(response, indent=4)
-                api_log.save()
-                frappe.throw(
-                    "Error in FBR Invoicing" 
-                )
+            # if resdata.get("status") == "Valid":
+            #     self.custom_fbr_invoice_no = response.get("invoiceNumber")
+            #     url = pyqrcode.create(self.custom_fbr_invoice_no)
+            #     url.svg(frappe.get_site_path()+'/public/files/'+self.name+'_online_qrcode.svg', scale=8)
+            #     self.custom_qr_code = '/files/'+self.name+'_online_qrcode.svg'
+            #     api_log.response_data = frappe.as_json(response, indent=4)
+            #     api_log.save()
+            #     frappe.msgprint("Invoice successfully submitted to FBR Invoicing.")
+            # else:
+            #     api_log.response_data = frappe.as_json(response, indent=4)
+            #     api_log.save()
+            #     frappe.throw(
+            #         "Error in FBR Invoicing" 
+            #     )
                   
                 
         except Exception as e:
-            api_log.error = frappe.as_json(e, indent=4)
-            api_log.save()
+            # api_log.error = frappe.as_json(e, indent=4)
+            # api_log.save()
                 
-            frappe.log_error(
-                title="FBR Invoicing API Error",
-                message=frappe.get_traceback()
-            )
+            # frappe.log_error(
+            #     title="FBR Invoicing API Error",
+            #     message=frappe.get_traceback()
+            # )
             
             frappe.throw(f"Error while submitting invoice to FBR: {str(e)}")
 
-        api_log.save()
+        # api_log.save()
     def get_mapped_data(self):
         
         data = {}
