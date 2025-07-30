@@ -1,7 +1,7 @@
 import frappe
 from erpnext.accounts.doctype.sales_invoice.sales_invoice import SalesInvoice as SalesInvoiceController
 from fbr_standard.api import FBRDigitalInvoicingAPI  
-from frappe.utils import cint
+from frappe.utils import cint,flt
 import pyqrcode
 
 
@@ -85,10 +85,10 @@ class SalesInvoice(SalesInvoiceController):
                 "rate": item.custom_tax_rate,
                 "uoM": item.uom,
                 "quantity": cint(item.qty),
-                "totalValues": item.amount + item.custom_tax_amount,
-                "valueSalesExcludingST": round(item.amount, 2),
+                "totalValues": round(flt(item.amount + item.custom_tax_amount), 2),
+                "valueSalesExcludingST": round(flt(item.amount), 2),
                 "fixedNotifiedValueOrRetailPrice": 0,
-                "salesTaxApplicable": round(item.custom_tax_amount, 2),
+                "salesTaxApplicable": round(flt(item.custom_tax_amount), 2),
                 "salesTaxWithheldAtSource": 0,
                 "extraTax": "",
                 "furtherTax": 0,
