@@ -80,7 +80,7 @@ class SalesInvoice(SalesInvoiceController):
         items = []
         for item in self.items:
             item_data = {
-                "hsCode": "0101.2100",
+                "hsCode":frappe.get_value("Item", item.item_code, "custom_hs_code") or "0101.2100",
                 "productDescription": item.description,
                 "rate": round(item.custom_tax_rate, 2),
                 "uoM":"Numbers, pieces, units",
@@ -95,7 +95,7 @@ class SalesInvoice(SalesInvoiceController):
                 "sroScheduleNo": "",
                 "fedPayable": 0,
                 "discount": 0,
-                "saleType": "Goods",
+                "saleType": "Goods at standard rate (default)",
                 "sroItemSerialNo": ""
             }
             items.append(item_data)
