@@ -82,8 +82,8 @@ class SalesInvoice(SalesInvoiceController):
             item_data = {
                 "hsCode": str(frappe.db.get_value("Item", item.item_code, "custom_hs_code")) or "8517.1890",
                 "productDescription": item.description,
-                "rate": "18%",
-                "uoM": item.uom,
+                "rate": f"{item.custom_tax_rate}%",
+                "uoM": "KG",
                 "quantity": cint(item.qty),
                 "totalValues": round(flt(item.amount + item.custom_tax_amount), 2),
                 "valueSalesExcludingST": round(flt(item.amount), 2),
